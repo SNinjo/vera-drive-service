@@ -1,0 +1,16 @@
+{
+  "editor.tabSize": 2,
+  "editor.insertSpaces": true,
+  "editor.detectIndentation": false,
+  "cSpell.words": [
+    "apperror",
+    "godoc",
+    "godotenv",
+    "gonic",
+    "gorm",
+    "Initialisms",
+    "test",
+    "testcontainers",
+    "testutil"
+  ],
+}

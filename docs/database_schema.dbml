@@ -1,0 +1,17 @@
+Table url_nodes {
+  id UUID [pk]
+  user_id int [not null, note: 'Foreign key to users table']
+  parent_id UUID [ref: > url_nodes.id]
+  name varchar(255) [not null]
+  type enum('folder', 'url') [not null]
+  url text [null, note: 'Only used when type is url']
+  created_at timestamp with time zone [not null, note: 'Automatically managed by GORM']
+  updated_at timestamp with time zone [not null, note: 'Automatically managed by GORM']
+  deleted_at timestamp with time zone
+
+  indexes {
+    user_id
+    parent_id
+    deleted_at
+  }
+}

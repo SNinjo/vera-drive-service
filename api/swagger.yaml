@@ -1,0 +1,216 @@
+openapi: 3.0.0
+info:
+  title: Vera Drive Service
+  description: URL storage and management service for the Vera ecosystem
+  version: DEV
+
+components:
+  securitySchemes:
+    userToken:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: User access token for API calls
+    
+  schemas:
+    Error:
+      type: object
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+        timestamp:
+          type: string
+          format: date-time
+      required:
+        - code
+        - message
+        - timestamp
+
+    URL:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: "123e4567-e89b-12d3-a456-426614174000"
+        name:
+          type: string
+          maxLength: 20
+          example: "My Folder"
+        type:
+          type: string
+          enum: [folder, url]
+          example: "folder"
+        url:
+          type: string
+          nullable: true
+          example: null
+        created_at:
+          type: string
+          format: date-time
+          example: "2024-01-01T12:00:00Z"
+        updated_at:
+          type: string
+          format: date-time
+          example: "2024-01-01T12:00:00Z"
+        parent:
+          type: array
+          items:
+            $ref: '#/components/schemas/BaseURL'
+        children:
+          type: array
+          items:
+            $ref: '#/components/schemas/BaseURL'
+      required:
+        - id
+        - name
+        - type
+        - url
+        - created_at
+        - updated_at
+        - parent
+        - children
+
+paths:
+  /urls:
+    post:
+      summary: Create a new URL or folder
+      description: Create a new URL or folder
+      tags:
+        - URL
+      security:
+        - userToken: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                parent_id:
+                  type: string
+                  format: uuid
+                  example: "123e4567-e89b-12d3-a456-426614174001"
+                name:
+                  type: string
+                  maxLength: 20
+                  example: "My Folder"
+                type:
+                  type: string
+                  enum: [folder, url]
+                  example: "folder"
+                url:
+                  type: string
+                  nullable: true
+                  example: null
+              required:
+                - parent_id
+                - name
+                - type
+                - url
+      responses:
+        '204':
+          description: URL or folder created successfully
+  
+  /urls/root-id:
+    get:
+      summary: Get root ID
+      description: Get the root ID
+      tags:
+        - URL
+      security:
+        - userToken: []
+      responses:
+        '200':
+          description: Root ID
+          content:
+            application/json:
+              schema:
+                type: string
+                format: uuid
+                example: "123e4567-e89b-12d3-a456-426614174000"
+
+  /urls/{id}:
+    get:
+      summary: List contents of a folder
+      description: Get all URLs and folders and its parent folder within the specified folder
+      tags:
+        - URL
+      security:
+        - userToken: []
+      parameters:
+        - name: id
+          in: path
+          description: Folder ID to list contents of
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: List of URLs and folders and its parent folder within the folder
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/URL'
+    
+    put:
+      summary: Update a URL or folder
+      description: Update the name, URL, or parent of an existing URL or folder
+      tags:
+        - URL
+      security:
+        - userToken: []
+      parameters:
+        - name: id
+          in: path
+          description: URL or folder ID to update
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                parent_id:
+                  type: string
+                  format: uuid
+                  example: "123e4567-e89b-12d3-a456-426614174001"
+                name:
+                  type: string
+                  maxLength: 20
+                  example: "My Bookmarks"
+                url:
+                  type: string
+                  nullable: true
+                  example: "https://example.com"
+      responses:
+        '204':
+          description: URL or folder updated successfully
+    
+    delete:
+      summary: Delete a URL or folder
+      description: Soft delete a URL or folder (sets deleted_at timestamp)
+      tags:
+        - URL
+      security:
+        - userToken: []
+      parameters:
+        - name: id
+          in: path
+          description: URL or folder ID to delete
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: URL or folder deleted successfully

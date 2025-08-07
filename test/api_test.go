@@ -38,7 +38,7 @@ func TestMain(m *testing.M) {
 
 	envs := map[string]string{
 		"PORT":                 "8082",
-		"DB_URL":               dbURL,
+		"DATABASE_URL":         dbURL,
 		"IDENTITY_SERVICE_URL": identityService.URL,
 	}
 	for key, value := range envs {

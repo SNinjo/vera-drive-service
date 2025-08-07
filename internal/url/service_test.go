@@ -158,7 +158,26 @@ func TestService_validateNameUniqueness_Success(t *testing.T) {
 	mockRepo.On("GetChildren", parentID).Return(siblings, nil)
 
 	// Act
-	err := service.validateNameUniqueness(name, parentID)
+	err := service.validateNameUniqueness(name, parentID, nil)
+
+	// Assert
+	assert.NoError(t, err)
+	mockRepo.AssertExpectations(t)
+}
+func TestService_validateNameUniqueness_ExcludeID(t *testing.T) {
+	// Arrange
+	mockRepo := &MockRepository{}
+	service := &service{repo: mockRepo}
+	name := "existing-name"
+	parentID := "parent-id"
+	siblings := []URLNode{
+		{ID: "sibling1", Name: name, Type: "folder"},
+	}
+
+	mockRepo.On("GetChildren", parentID).Return(siblings, nil)
+
+	// Act
+	err := service.validateNameUniqueness(name, parentID, test.StringPtr("sibling1"))
 
 	// Assert
 	assert.NoError(t, err)
@@ -177,7 +196,7 @@ func TestService_validateNameUniqueness_NameAlreadyExists(t *testing.T) {
 	mockRepo.On("GetChildren", parentID).Return(siblings, nil)
 
 	// Act
-	err := service.validateNameUniqueness(name, parentID)
+	err := service.validateNameUniqueness(name, parentID, nil)
 
 	// Assert
 	assert.Error(t, err)
@@ -194,7 +213,7 @@ func TestService_validateNameUniqueness_RepositoryError(t *testing.T) {
 	mockRepo.On("GetChildren", parentID).Return([]URLNode{}, assert.AnError)
 
 	// Act
-	err := service.validateNameUniqueness(name, parentID)
+	err := service.validateNameUniqueness(name, parentID, nil)
 
 	// Assert
 	assert.Error(t, err)

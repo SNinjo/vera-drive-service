@@ -37,12 +37,15 @@ func (s *service) validateOwnership(nodeID string, userID int) error {
 	return nil
 }
 
-func (s *service) validateNameUniqueness(name string, parentID string) error {
+func (s *service) validateNameUniqueness(name string, parentID string, excludeID *string) error {
 	siblings, err := s.repo.GetChildren(parentID)
 	if err != nil {
 		return err
 	}
 	for _, sibling := range siblings {
+		if excludeID != nil && sibling.ID == *excludeID {
+			continue
+		}
 		if sibling.Name == name {
 			return apperror.New(apperror.CodeURLNameAlreadyExists, "Name already exists in this folder | name: "+name+", parentID: "+parentID)
 		}
@@ -95,7 +98,7 @@ func (s *service) CreateURL(creates *RequestBody, userID int) error {
 	if err := s.validateOwnership(creates.ParentID, userID); err != nil {
 		return err
 	}
-	if err := s.validateNameUniqueness(creates.Name, creates.ParentID); err != nil {
+	if err := s.validateNameUniqueness(creates.Name, creates.ParentID, nil); err != nil {
 		return err
 	}
 
@@ -120,7 +123,7 @@ func (s *service) ReplaceURL(id string, updates *RequestBody, userID int) error 
 	if err := s.validateOwnership(updates.ParentID, userID); err != nil {
 		return err
 	}
-	if err := s.validateNameUniqueness(updates.Name, updates.ParentID); err != nil {
+	if err := s.validateNameUniqueness(updates.Name, updates.ParentID, &id); err != nil {
 		return err
 	}
 

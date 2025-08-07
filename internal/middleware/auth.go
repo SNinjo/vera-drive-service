@@ -18,9 +18,9 @@ type UserClaims struct {
 	Picture string `json:"picture"`
 }
 
-type AuthMiddleware gin.HandlerFunc
+type AuthHandler gin.HandlerFunc
 
-func NewAuthMiddleware(config *config.Config) AuthMiddleware {
+func NewAuthHandler(config *config.Config) AuthHandler {
 	return func(c *gin.Context) {
 		authHeader := c.GetHeader("Authorization")
 

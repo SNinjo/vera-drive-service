@@ -11,7 +11,7 @@ import (
 	"go.uber.org/zap"
 )
 
-type HTTPMiddleware gin.HandlerFunc
+type HTTPHandler gin.HandlerFunc
 
 func logRequest(c *gin.Context, logger *zap.Logger, requestID string) {
 	method := c.Request.Method
@@ -40,7 +40,7 @@ func logRequest(c *gin.Context, logger *zap.Logger, requestID string) {
 	logger.Info("request started", fields...)
 }
 
-func NewHTTPMiddleware(logger *zap.Logger) HTTPMiddleware {
+func NewHTTPHandler(logger *zap.Logger) HTTPHandler {
 	return func(c *gin.Context) {
 		start := time.Now()
 		requestID := uuid.New().String()

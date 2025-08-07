@@ -40,6 +40,7 @@ func TestMain(m *testing.M) {
 		"PORT":                 "8082",
 		"DATABASE_URL":         dbURL,
 		"IDENTITY_SERVICE_URL": identityService.URL,
+		"ALLOWED_ORIGIN":       "http://mock-origin-1, http://mock-origin-2",
 	}
 	for key, value := range envs {
 		err = os.Setenv(key, value)

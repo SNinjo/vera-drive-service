@@ -23,8 +23,9 @@ func InitApp() (*App, error) {
 		return nil, err
 	}
 	configConfig := config.NewConfig(zapLogger)
-	httpMiddleware := middleware.NewHTTPMiddleware(zapLogger)
-	authMiddleware := middleware.NewAuthMiddleware(configConfig)
+	httpHandler := middleware.NewHTTPHandler(zapLogger)
+	corsHandler := middleware.NewCORSHandler(configConfig)
+	authHandler := middleware.NewAuthHandler(configConfig)
 	gormDB, err := db.NewDatabase(configConfig)
 	if err != nil {
 		return nil, err
@@ -32,7 +33,7 @@ func InitApp() (*App, error) {
 	repository := url.NewRepository(gormDB)
 	service := url.NewService(repository)
 	handler := url.NewHandler(service)
-	engine := router.NewRouter(httpMiddleware, authMiddleware, handler)
-	app := NewApp(configConfig, engine, gormDB, zapLogger, httpMiddleware, authMiddleware, handler)
+	engine := router.NewRouter(httpHandler, corsHandler, authHandler, handler)
+	app := NewApp(configConfig, engine, gormDB, zapLogger, httpHandler, corsHandler, authHandler, handler)
 	return app, nil
 }

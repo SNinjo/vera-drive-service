@@ -9,13 +9,17 @@ import (
 )
 
 func NewRouter(
-	httpMiddleware middleware.HTTPMiddleware,
-	authMiddleware middleware.AuthMiddleware,
+	httpHandler middleware.HTTPHandler,
+	corsHandler middleware.CORSHandler,
+	authHandler middleware.AuthHandler,
 	urlHandler *url.Handler,
 ) *gin.Engine {
 	r := gin.New()
-	r.Use(gin.Recovery())
-	r.Use(gin.HandlerFunc(httpMiddleware))
+	r.Use(
+		gin.Recovery(),
+		gin.HandlerFunc(httpHandler),
+		gin.HandlerFunc(corsHandler),
+	)
 
 	r.GET("/healthz", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{"message": "OK"})
@@ -23,7 +27,7 @@ func NewRouter(
 	r.StaticFile("/docs/swagger.yaml", "./api/swagger.yaml")
 	r.StaticFile("/docs", "./api/swagger.html")
 
-	url.RegisterRoutes(r, urlHandler, authMiddleware)
+	url.RegisterRoutes(r, urlHandler, authHandler)
 
 	return r
 }

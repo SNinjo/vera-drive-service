@@ -11,13 +11,14 @@ import (
 )
 
 type App struct {
-	Config         *config.Config
-	Router         *gin.Engine
-	DB             *gorm.DB
-	Logger         *zap.Logger
-	HTTPMiddleware middleware.HTTPMiddleware
-	AuthMiddleware middleware.AuthMiddleware
-	URLHandler     *url.Handler
+	Config      *config.Config
+	Router      *gin.Engine
+	DB          *gorm.DB
+	Logger      *zap.Logger
+	HTTPHandler middleware.HTTPHandler
+	CORSHandler middleware.CORSHandler
+	AuthHandler middleware.AuthHandler
+	URLHandler  *url.Handler
 }
 
 func NewApp(
@@ -25,18 +26,20 @@ func NewApp(
 	router *gin.Engine,
 	db *gorm.DB,
 	logger *zap.Logger,
-	httpMiddleware middleware.HTTPMiddleware,
-	authMiddleware middleware.AuthMiddleware,
+	httpHandler middleware.HTTPHandler,
+	corsHandler middleware.CORSHandler,
+	authHandler middleware.AuthHandler,
 	urlHandler *url.Handler,
 ) *App {
 	return &App{
-		Config:         config,
-		Router:         router,
-		DB:             db,
-		Logger:         logger,
-		HTTPMiddleware: httpMiddleware,
-		AuthMiddleware: authMiddleware,
-		URLHandler:     urlHandler,
+		Config:      config,
+		Router:      router,
+		DB:          db,
+		Logger:      logger,
+		HTTPHandler: httpHandler,
+		CORSHandler: corsHandler,
+		AuthHandler: authHandler,
+		URLHandler:  urlHandler,
 	}
 }
 

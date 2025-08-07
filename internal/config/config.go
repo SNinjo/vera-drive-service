@@ -2,6 +2,7 @@ package config
 
 import (
 	"os"
+	"strings"
 
 	"github.com/joho/godotenv"
 	"go.uber.org/zap"
@@ -12,6 +13,7 @@ type Config struct {
 	Port               string
 	DatabaseURL        string
 	IdentityServiceURL string
+	ALLOWED_ORIGINS    []string
 }
 
 func NewConfig(logger *zap.Logger) *Config {
@@ -36,5 +38,6 @@ func NewConfig(logger *zap.Logger) *Config {
 		Port:               port,
 		DatabaseURL:        os.Getenv("DATABASE_URL"),
 		IdentityServiceURL: os.Getenv("IDENTITY_SERVICE_URL"),
+		ALLOWED_ORIGINS:    strings.Split(os.Getenv("ALLOWED_ORIGINS"), ","),
 	}
 }

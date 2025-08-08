@@ -5,15 +5,23 @@ info:
   version: DEV
 
 components:
-  securitySchemes:
+  securitySchemes: 
     userToken:
       type: http
       scheme: bearer
       bearerFormat: JWT
       description: User access token for API calls
-    
+
   schemas:
-    Error:
+    InputError:
+      type: object
+      properties:
+        error:
+          type: string
+      required:
+        - error
+
+    AppError:
       type: object
       properties:
         code:
@@ -28,7 +36,7 @@ components:
         - message
         - timestamp
 
-    URL:
+    BaseURL:
       type: object
       properties:
         id:
@@ -50,19 +58,11 @@ components:
         created_at:
           type: string
           format: date-time
-          example: "2024-01-01T12:00:00Z"
+          example: "1970-01-01T00:00:00.000Z"
         updated_at:
           type: string
           format: date-time
-          example: "2024-01-01T12:00:00Z"
-        parent:
-          type: array
-          items:
-            $ref: '#/components/schemas/BaseURL'
-        children:
-          type: array
-          items:
-            $ref: '#/components/schemas/BaseURL'
+          example: "1970-01-01T00:00:00.000Z"
       required:
         - id
         - name
@@ -70,8 +70,81 @@ components:
         - url
         - created_at
         - updated_at
-        - parent
-        - children
+
+    URL:
+      allOf:
+        - $ref: '#/components/schemas/BaseURL'
+        - type: object
+          properties:
+            parent:
+              type: array
+              items:
+                $ref: '#/components/schemas/BaseURL'
+            children:
+              type: array
+              items:
+                $ref: '#/components/schemas/BaseURL'
+          required:
+            - parent
+            - children
+
+  responses:
+    Unauthorized:
+      description: Unauthorized - Authentication required
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/AppError'
+          examples:
+            identityServiceUnavailable:
+              value:
+                code: "401_02_001"
+                message: "Identity service unavailable"
+                timestamp: "1970-01-01T00:00:00.000Z"
+            invalidClaimsInUserToken:
+              value:
+                code: "401_02_002"
+                message: "Invalid claims in user token"
+                timestamp: "1970-01-01T00:00:00.000Z"
+    BadRequest:
+      description: Invalid input data
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/InputError'
+          example:
+            error: "invalid request body | ..."
+    
+    URLNotFound:
+      description: URL not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/AppError'
+          example:
+            code: "404_02_003"
+            message: "URL not found"
+            timestamp: "1970-01-01T00:00:00.000Z"
+    URLAccessDenied:
+      description: URL access denied
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/AppError'
+          example:
+            code: "403_02_004"
+            message: "URL access denied"
+            timestamp: "1970-01-01T00:00:00.000Z"
+    URLNameAlreadyExists:
+      description: URL name already exists
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/AppError'
+          example:
+            code: "400_02_005"
+            message: "URL name already exists"
+            timestamp: "1970-01-01T00:00:00.000Z"
 
 paths:
   /urls:
@@ -113,7 +186,15 @@ paths:
       responses:
         '204':
           description: URL or folder created successfully
-  
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/URLAccessDenied'
+        '404':
+          $ref: '#/components/responses/URLNotFound'
+          
   /urls/root-id:
     get:
       summary: Get root ID
@@ -131,8 +212,19 @@ paths:
                 type: string
                 format: uuid
                 example: "123e4567-e89b-12d3-a456-426614174000"
+        '401':
+          $ref: '#/components/responses/Unauthorized'
 
   /urls/{id}:
+    parameters:
+      - name: id
+        in: path
+        description: Folder ID to list contents of
+        required: true
+        schema:
+          type: string
+          format: uuid
+
     get:
       summary: List contents of a folder
       description: Get all URLs and folders and its parent folder within the specified folder
@@ -140,14 +232,6 @@ paths:
         - URL
       security:
         - userToken: []
-      parameters:
-        - name: id
-          in: path
-          description: Folder ID to list contents of
-          required: true
-          schema:
-            type: string
-            format: uuid
       responses:
         '200':
           description: List of URLs and folders and its parent folder within the folder
@@ -157,7 +241,15 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/URL'
-    
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/URLAccessDenied'
+        '404':
+          $ref: '#/components/responses/URLNotFound'
+
     put:
       summary: Update a URL or folder
       description: Update the name, URL, or parent of an existing URL or folder
@@ -165,14 +257,6 @@ paths:
         - URL
       security:
         - userToken: []
-      parameters:
-        - name: id
-          in: path
-          description: URL or folder ID to update
-          required: true
-          schema:
-            type: string
-            format: uuid
       requestBody:
         required: true
         content:
@@ -195,7 +279,15 @@ paths:
       responses:
         '204':
           description: URL or folder updated successfully
-    
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/URLAccessDenied'
+        '404':
+          $ref: '#/components/responses/URLNotFound'
+
     delete:
       summary: Delete a URL or folder
       description: Soft delete a URL or folder (sets deleted_at timestamp)
@@ -203,14 +295,14 @@ paths:
         - URL
       security:
         - userToken: []
-      parameters:
-        - name: id
-          in: path
-          description: URL or folder ID to delete
-          required: true
-          schema:
-            type: string
-            format: uuid
       responses:
         '204':
           description: URL or folder deleted successfully
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/URLAccessDenied'
+        '404':
+          $ref: '#/components/responses/URLNotFound'

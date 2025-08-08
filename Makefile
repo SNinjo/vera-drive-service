@@ -1,4 +1,4 @@
-.PHONY: wire start dev build prod test test-cov test-cov-html access-db insert-user-to-db migrate-create migrate-up migrate-down migrate-force
+.PHONY: wire start dev build prod test test-cov test-cov-html access-db migrate-create migrate-up migrate-down migrate-force
 
 SHELL := /bin/bash
 ENV := source .env &&
@@ -41,9 +41,6 @@ test-cov-html:
 
 access-db:
 	$(ENV) psql "$$DB_URL"
-
-insert-user-to-db:
-	$(ENV) psql "$$DB_URL" -c "INSERT INTO users (email) VALUES ('$(email)');"
 
 migrate-create:
 	migrate create -ext sql -dir migrations -seq $(name)

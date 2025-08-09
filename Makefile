@@ -1,4 +1,4 @@
-.PHONY: wire start dev build prod test test-cov test-cov-html access-db migrate-create migrate-up migrate-down migrate-force
+.PHONY: wire dev build prod test test-cov test-cov-html access-db migrate-create migrate-up migrate-down migrate-force
 
 SHELL := /bin/bash
 ENV := source .env &&
@@ -6,11 +6,8 @@ ENV := source .env &&
 wire:
 	go run github.com/google/wire/cmd/wire ./internal/app/
 
-start:
-	go run ./cmd/...
-
 dev:
-	reflex -s -r '(\.go$$|^\.env$$)' -R '(_gen\.go$$)' -- sh -c 'make wire && make start'
+	reflex -s -r '(\.go$$|^\.env$$)' -R '(_gen\.go$$)' -- sh -c 'make wire && go run ./cmd/...'
 
 build:
 	mkdir -p bin
@@ -18,6 +15,7 @@ build:
 	chmod +x bin/main
 
 prod:
+	make build
 	$(ENV) GIN_MODE=release bin/main
 
 path ?= ./...

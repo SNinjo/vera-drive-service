@@ -186,10 +186,24 @@ components:
             timestamp: "1970-01-01T00:00:00.000Z"
 
 paths:
+  /healthz:
+    get:
+      tags:
+        - Tool
+      responses:
+        '200':
+          description: Service is healthy
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "ok"
+
   /urls:
     post:
-      summary: Create a new URL or folder
-      description: Create a new URL or folder
       tags:
         - URL
       security:
@@ -236,8 +250,6 @@ paths:
           
   /urls/root-id:
     get:
-      summary: Get root ID
-      description: Get the root ID
       tags:
         - URL
       security:
@@ -265,8 +277,6 @@ paths:
           format: uuid
 
     get:
-      summary: List contents of a folder
-      description: Get all URLs and folders and its parent folder within the specified folder
       tags:
         - URL
       security:
@@ -290,8 +300,6 @@ paths:
           $ref: '#/components/responses/URLNotFound'
 
     put:
-      summary: Update a URL or folder
-      description: Update the name, URL, or parent of an existing URL or folder
       tags:
         - URL
       security:
@@ -328,8 +336,6 @@ paths:
           $ref: '#/components/responses/URLNotFound'
 
     delete:
-      summary: Delete a URL or folder
-      description: Soft delete a URL or folder (sets deleted_at timestamp)
       tags:
         - URL
       security:

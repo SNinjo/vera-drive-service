@@ -22,7 +22,7 @@ func NewRouter(
 	)
 
 	r.GET("/healthz", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{"message": "OK"})
+		c.JSON(http.StatusOK, gin.H{"status": "OK"})
 	})
 	r.StaticFile("/docs/swagger.yaml", "./api/swagger.yaml")
 	r.StaticFile("/docs", "./api/swagger.html")

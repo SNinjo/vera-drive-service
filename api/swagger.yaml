@@ -96,16 +96,46 @@ components:
           schema:
             $ref: '#/components/schemas/AppError'
           examples:
+            invalid_access_token:
+              summary: Invalid access token
+              value:
+                code: "401_01_006"
+                message: "Invalid access token"
+                timestamp: "1970-01-01T00:00:00Z"
+            invalid_token_issuer:
+              summary: Invalid token issuer
+              value:
+                code: "401_01_007"
+                message: "Invalid token issuer"
+                timestamp: "1970-01-01T00:00:00Z"
+            invalid_auth_header:
+              summary: Invalid authorization header
+              value:
+                code: "401_01_008"
+                message: "Invalid authorization header"
+                timestamp: "1970-01-01T00:00:00Z"
             identityServiceUnavailable:
+              summary: Identity service unavailable
               value:
                 code: "401_02_001"
                 message: "Identity service unavailable"
                 timestamp: "1970-01-01T00:00:00.000Z"
             invalidClaimsInUserToken:
+              summary: Invalid claims in user token
               value:
                 code: "401_02_002"
                 message: "Invalid claims in user token"
                 timestamp: "1970-01-01T00:00:00.000Z"
+    Forbidden:
+      description: Forbidden - Access denied
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/AppError'
+          example:
+            code: "403_01_011"
+            message: "User not authorized"
+            timestamp: "1970-01-01T00:00:00Z"
     BadRequest:
       description: Invalid input data
       content:
@@ -125,16 +155,25 @@ components:
             code: "404_02_003"
             message: "URL not found"
             timestamp: "1970-01-01T00:00:00.000Z"
-    URLAccessDenied:
-      description: URL access denied
+    ForbiddenOrURLAccessDenied:
+      description: Forbidden or URL access denied
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/AppError'
-          example:
-            code: "403_02_004"
-            message: "URL access denied"
-            timestamp: "1970-01-01T00:00:00.000Z"
+          examples:
+            forbidden:
+              summary: Forbidden
+              value:
+                code: "403_01_011"
+                message: "User not authorized"
+                timestamp: "1970-01-01T00:00:00Z"
+            urlAccessDenied:
+              summary: URL access denied
+              value:  
+                code: "403_02_004"
+                message: "URL access denied"
+                timestamp: "1970-01-01T00:00:00.000Z"
     URLNameAlreadyExists:
       description: URL name already exists
       content:
@@ -191,7 +230,7 @@ paths:
         '401':
           $ref: '#/components/responses/Unauthorized'
         '403':
-          $ref: '#/components/responses/URLAccessDenied'
+          $ref: '#/components/responses/ForbiddenOrURLAccessDenied'
         '404':
           $ref: '#/components/responses/URLNotFound'
           
@@ -246,7 +285,7 @@ paths:
         '401':
           $ref: '#/components/responses/Unauthorized'
         '403':
-          $ref: '#/components/responses/URLAccessDenied'
+          $ref: '#/components/responses/ForbiddenOrURLAccessDenied'
         '404':
           $ref: '#/components/responses/URLNotFound'
 
@@ -284,7 +323,7 @@ paths:
         '401':
           $ref: '#/components/responses/Unauthorized'
         '403':
-          $ref: '#/components/responses/URLAccessDenied'
+          $ref: '#/components/responses/ForbiddenOrURLAccessDenied'
         '404':
           $ref: '#/components/responses/URLNotFound'
 
@@ -303,6 +342,6 @@ paths:
         '401':
           $ref: '#/components/responses/Unauthorized'
         '403':
-          $ref: '#/components/responses/URLAccessDenied'
+          $ref: '#/components/responses/ForbiddenOrURLAccessDenied'
         '404':
           $ref: '#/components/responses/URLNotFound'

@@ -1,7 +1,7 @@
 .PHONY: wire dev build prod test test-cov test-cov-html access-db migrate-create migrate-up migrate-down migrate-force
 
-SHELL := /bin/bash
-ENV := source .env &&
+-include .env
+export $(shell sed -n 's/^\([A-Za-z_][A-Za-z0-9_]*\)=.*/\1/p' .env)
 
 wire:
 	go run github.com/google/wire/cmd/wire ./internal/app/
@@ -16,7 +16,7 @@ build:
 
 prod:
 	make build
-	$(ENV) GIN_MODE=release bin/main
+	GIN_MODE=release bin/main
 
 path ?= ./...
 test:
@@ -38,16 +38,18 @@ test-cov-html:
 	go tool cover -html=cover.out
 
 access-db:
-	$(ENV) psql "$$DATABASE_URL"
+	psql "$$DATABASE_URL"
+
+MIGRATION_URL := $(DATABASE_URL)&x-migrations-table=$(MIGRATION_TABLE)
 
 migrate-create:
 	migrate create -ext sql -dir migrations -seq $(name)
 
 migrate-up:
-	$(ENV) migrate -path migrations -database "$$DATABASE_URL" up
+	migrate -path migrations -database "$(MIGRATION_URL)" up
 
 migrate-down:
-	$(ENV) migrate -path migrations -database "$$DATABASE_URL" down 1
+	migrate -path migrations -database "$(MIGRATION_URL)" down 1
 
 migrate-force:
-	$(ENV) migrate -path migrations -database "$$DATABASE_URL" force $(version)
+	migrate -path migrations -database "$(MIGRATION_URL)" force $(version)

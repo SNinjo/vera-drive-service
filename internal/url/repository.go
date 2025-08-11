@@ -8,17 +8,17 @@ import (
 )
 
 type URLNode struct {
-	ID        string    `gorm:"type:uuid;primary_key"`
-	UserID    int       `gorm:"type:int;index"`
-	ParentID  *string   `gorm:"type:uuid;index"`
-	Parent    *URLNode  `gorm:"foreignKey:ParentID"`
-	Children  []URLNode `gorm:"foreignKey:ParentID"`
-	Name      string    `gorm:"size:255;not null"`
-	Type      string    `gorm:"size:10;not null;check:type IN ('folder','url')"`
-	URL       *string   `gorm:"type:text"`
-	CreatedAt time.Time
-	UpdatedAt time.Time
-	DeletedAt *time.Time `gorm:"index"`
+	ID        string     `gorm:"type:uuid;primary_key"`
+	UserID    int        `gorm:"type:int;index"`
+	ParentID  *string    `gorm:"type:uuid;index"`
+	Parent    *URLNode   `gorm:"foreignKey:ParentID"`
+	Children  []URLNode  `gorm:"foreignKey:ParentID"`
+	Name      string     `gorm:"type:varchar(255);not null"`
+	Type      string     `gorm:"type:varchar(10);not null;check:type IN ('folder','url')"`
+	URL       *string    `gorm:"type:text"`
+	CreatedAt time.Time  `gorm:"type:timestamptz;not null"`
+	UpdatedAt time.Time  `gorm:"type:timestamptz;not null"`
+	DeletedAt *time.Time `gorm:"type:timestamptz;index"`
 }
 
 func (URLNode) TableName() string {
@@ -116,6 +116,5 @@ func (r *repository) Update(node *URLNode) error {
 }
 
 func (r *repository) SoftDelete(id string) error {
-	now := time.Now().UTC()
-	return r.db.Model(&URLNode{}).Where("id = ?", id).Update("deleted_at", now).Error
+	return r.db.Model(&URLNode{}).Where("id = ?", id).Update("deleted_at", time.Now()).Error
 }

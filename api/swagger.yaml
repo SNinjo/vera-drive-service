@@ -126,16 +126,6 @@ components:
                 code: "401_02_002"
                 message: "Invalid claims in user token"
                 timestamp: "1970-01-01T00:00:00.000Z"
-    Forbidden:
-      description: Forbidden - Access denied
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/AppError'
-          example:
-            code: "403_01_011"
-            message: "User not authorized"
-            timestamp: "1970-01-01T00:00:00Z"
     BadRequest:
       description: Invalid input data
       content:
@@ -155,25 +145,16 @@ components:
             code: "404_02_003"
             message: "URL not found"
             timestamp: "1970-01-01T00:00:00.000Z"
-    ForbiddenOrURLAccessDenied:
-      description: Forbidden or URL access denied
+    URLAccessDenied:
+      description: URL access denied
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/AppError'
-          examples:
-            forbidden:
-              summary: Forbidden
-              value:
-                code: "403_01_011"
-                message: "User not authorized"
-                timestamp: "1970-01-01T00:00:00Z"
-            urlAccessDenied:
-              summary: URL access denied
-              value:  
-                code: "403_02_004"
-                message: "URL access denied"
-                timestamp: "1970-01-01T00:00:00.000Z"
+          example:
+            code: "403_02_004"
+            message: "URL access denied"
+            timestamp: "1970-01-01T00:00:00.000Z"
     URLNameAlreadyExists:
       description: URL name already exists
       content:
@@ -244,7 +225,7 @@ paths:
         '401':
           $ref: '#/components/responses/Unauthorized'
         '403':
-          $ref: '#/components/responses/ForbiddenOrURLAccessDenied'
+          $ref: '#/components/responses/URLAccessDenied'
         '404':
           $ref: '#/components/responses/URLNotFound'
           
@@ -295,7 +276,7 @@ paths:
         '401':
           $ref: '#/components/responses/Unauthorized'
         '403':
-          $ref: '#/components/responses/ForbiddenOrURLAccessDenied'
+          $ref: '#/components/responses/URLAccessDenied'
         '404':
           $ref: '#/components/responses/URLNotFound'
 
@@ -331,7 +312,7 @@ paths:
         '401':
           $ref: '#/components/responses/Unauthorized'
         '403':
-          $ref: '#/components/responses/ForbiddenOrURLAccessDenied'
+          $ref: '#/components/responses/URLAccessDenied'
         '404':
           $ref: '#/components/responses/URLNotFound'
 
@@ -348,6 +329,6 @@ paths:
         '401':
           $ref: '#/components/responses/Unauthorized'
         '403':
-          $ref: '#/components/responses/ForbiddenOrURLAccessDenied'
+          $ref: '#/components/responses/URLAccessDenied'
         '404':
           $ref: '#/components/responses/URLNotFound'

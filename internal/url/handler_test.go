@@ -3,10 +3,11 @@ package url
 import (
 	"bytes"
 	"encoding/json"
+	"io"
 	"net/http"
-	"net/http/httptest"
 	"testing"
 	"time"
+	"vera-identity-service/test"
 
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
@@ -42,12 +43,6 @@ func (m *MockService) DeleteURL(id string, userID int) error {
 	return args.Error(0)
 }
 
-func setupTestContext() (*gin.Context, *httptest.ResponseRecorder) {
-	gin.SetMode(gin.TestMode)
-	w := httptest.NewRecorder()
-	c, _ := gin.CreateTestContext(w)
-	return c, w
-}
 func TestHandler_NewHandler_Success(t *testing.T) {
 	// Arrange
 	mockService := &MockService{}
@@ -64,7 +59,7 @@ func TestHandler_CreateURL_Success(t *testing.T) {
 	// Arrange
 	mockService := &MockService{}
 	handler := NewHandler(mockService)
-	c, w := setupTestContext()
+	c, w := test.SetupContext()
 
 	userID := 1
 	requestBody := RequestBody{
@@ -74,7 +69,7 @@ func TestHandler_CreateURL_Success(t *testing.T) {
 	}
 	requestJSON, _ := json.Marshal(requestBody)
 
-	c.Request = httptest.NewRequest("POST", "/urls", bytes.NewBuffer(requestJSON))
+	c.Request.Body = io.NopCloser(bytes.NewBuffer(requestJSON))
 	c.Request.Header.Set("Content-Type", "application/json")
 	c.Set("user_id", userID)
 
@@ -131,11 +126,10 @@ func TestHandler_CreateURL_InvalidRequestBody(t *testing.T) {
 			// Arrange
 			mockService := &MockService{}
 			handler := NewHandler(mockService)
-			c, w := setupTestContext()
+			c, w := test.SetupContext()
 
-			req := httptest.NewRequest("POST", "/urls", bytes.NewBufferString(tt.payload))
-			req.Header.Set("Content-Type", "application/json")
-			c.Request = req
+			c.Request.Body = io.NopCloser(bytes.NewBufferString(tt.payload))
+			c.Request.Header.Set("Content-Type", "application/json")
 			c.Set("user_id", 1)
 
 			// Act
@@ -156,7 +150,7 @@ func TestHandler_CreateURL_ServiceError(t *testing.T) {
 	// Arrange
 	mockService := &MockService{}
 	handler := NewHandler(mockService)
-	c, w := setupTestContext()
+	c, w := test.SetupContext()
 
 	requestBody := RequestBody{
 		ParentID: "123e4567-e89b-12d3-a456-426614174001",
@@ -165,7 +159,7 @@ func TestHandler_CreateURL_ServiceError(t *testing.T) {
 	}
 	requestJSON, _ := json.Marshal(requestBody)
 
-	c.Request = httptest.NewRequest("POST", "/urls", bytes.NewBuffer(requestJSON))
+	c.Request.Body = io.NopCloser(bytes.NewBuffer(requestJSON))
 	c.Request.Header.Set("Content-Type", "application/json")
 	c.Set("user_id", 1)
 
@@ -185,11 +179,11 @@ func TestHandler_GetRootID_Success(t *testing.T) {
 	// Arrange
 	mockService := &MockService{}
 	handler := NewHandler(mockService)
-	c, w := setupTestContext()
+	c, w := test.SetupContext()
 
 	userID := 1
 	expectedRootID := "123e4567-e89b-12d3-a456-426614174001"
-	c.Request = httptest.NewRequest("GET", "/urls/root", nil)
+
 	c.Set("user_id", userID)
 
 	mockService.On("GetRootID", userID).Return(expectedRootID, nil)
@@ -210,10 +204,10 @@ func TestHandler_GetRootID_ServiceError(t *testing.T) {
 	// Arrange
 	mockService := &MockService{}
 	handler := NewHandler(mockService)
-	c, w := setupTestContext()
+	c, w := test.SetupContext()
 
 	userID := 1
-	c.Request = httptest.NewRequest("GET", "/urls/root", nil)
+
 	c.Set("user_id", userID)
 
 	mockService.On("GetRootID", userID).Return("", assert.AnError)
@@ -232,7 +226,7 @@ func TestHandler_GetURL_Success(t *testing.T) {
 	// Arrange
 	mockService := &MockService{}
 	handler := NewHandler(mockService)
-	c, w := setupTestContext()
+	c, w := test.SetupContext()
 
 	userID := 1
 	urlID := "123e4567-e89b-12d3-a456-426614174001"
@@ -274,7 +268,7 @@ func TestHandler_GetURL_Success(t *testing.T) {
 			},
 		},
 	}
-	c.Request = httptest.NewRequest("GET", "/urls/"+urlID, nil)
+
 	c.Params = gin.Params{{Key: "id", Value: urlID}}
 	c.Set("user_id", userID)
 
@@ -296,9 +290,8 @@ func TestHandler_GetURL_InvalidRequestURI(t *testing.T) {
 	// Arrange
 	mockService := &MockService{}
 	handler := NewHandler(mockService)
-	c, w := setupTestContext()
+	c, w := test.SetupContext()
 
-	c.Request = httptest.NewRequest("GET", "/urls/invalid-uuid", nil)
 	c.Params = gin.Params{{Key: "id", Value: "invalid-uuid"}}
 	c.Set("user_id", 1)
 
@@ -318,10 +311,10 @@ func TestHandler_GetURL_ServiceError(t *testing.T) {
 	// Arrange
 	mockService := &MockService{}
 	handler := NewHandler(mockService)
-	c, w := setupTestContext()
+	c, w := test.SetupContext()
 
 	urlID := "123e4567-e89b-12d3-a456-426614174001"
-	c.Request = httptest.NewRequest("GET", "/urls/"+urlID, nil)
+
 	c.Params = gin.Params{{Key: "id", Value: urlID}}
 	c.Set("user_id", 1)
 
@@ -341,7 +334,7 @@ func TestHandler_ReplaceURL_Success(t *testing.T) {
 	// Arrange
 	mockService := &MockService{}
 	handler := NewHandler(mockService)
-	c, w := setupTestContext()
+	c, w := test.SetupContext()
 
 	urlID := "123e4567-e89b-12d3-a456-426614174001"
 	requestBody := RequestBody{
@@ -350,7 +343,8 @@ func TestHandler_ReplaceURL_Success(t *testing.T) {
 		Type:     "folder",
 	}
 	requestJSON, _ := json.Marshal(requestBody)
-	c.Request = httptest.NewRequest("PUT", "/urls/"+urlID, bytes.NewBuffer(requestJSON))
+
+	c.Request.Body = io.NopCloser(bytes.NewBuffer(requestJSON))
 	c.Request.Header.Set("Content-Type", "application/json")
 	c.Params = gin.Params{{Key: "id", Value: urlID}}
 	c.Set("user_id", 1)
@@ -369,9 +363,8 @@ func TestHandler_ReplaceURL_InvalidRequestURI(t *testing.T) {
 	// Arrange
 	mockService := &MockService{}
 	handler := NewHandler(mockService)
-	c, w := setupTestContext()
+	c, w := test.SetupContext()
 
-	c.Request = httptest.NewRequest("PUT", "/urls/invalid-uuid", nil)
 	c.Request.Header.Set("Content-Type", "application/json")
 	c.Params = gin.Params{{Key: "id", Value: "invalid-uuid"}}
 	c.Set("user_id", 1)
@@ -431,12 +424,11 @@ func TestHandler_ReplaceURL_InvalidRequestBody(t *testing.T) {
 			// Arrange
 			mockService := &MockService{}
 			handler := NewHandler(mockService)
-			c, w := setupTestContext()
+			c, w := test.SetupContext()
 
 			urlID := "123e4567-e89b-12d3-a456-426614174001"
-			req := httptest.NewRequest("PUT", "/urls/"+urlID, bytes.NewBufferString(tt.payload))
-			req.Header.Set("Content-Type", "application/json")
-			c.Request = req
+			c.Request.Body = io.NopCloser(bytes.NewBufferString(tt.payload))
+			c.Request.Header.Set("Content-Type", "application/json")
 			c.Params = gin.Params{{Key: "id", Value: urlID}}
 			c.Set("user_id", 1)
 
@@ -458,7 +450,7 @@ func TestHandler_ReplaceURL_ServiceError(t *testing.T) {
 	// Arrange
 	mockService := &MockService{}
 	handler := NewHandler(mockService)
-	c, w := setupTestContext()
+	c, w := test.SetupContext()
 
 	urlID := "123e4567-e89b-12d3-a456-426614174001"
 	requestBody := RequestBody{
@@ -468,7 +460,7 @@ func TestHandler_ReplaceURL_ServiceError(t *testing.T) {
 	}
 	requestJSON, _ := json.Marshal(requestBody)
 
-	c.Request = httptest.NewRequest("PUT", "/urls/"+urlID, bytes.NewBuffer(requestJSON))
+	c.Request.Body = io.NopCloser(bytes.NewBuffer(requestJSON))
 	c.Request.Header.Set("Content-Type", "application/json")
 	c.Params = gin.Params{{Key: "id", Value: urlID}}
 	c.Set("user_id", 1)
@@ -489,11 +481,10 @@ func TestHandler_DeleteURL_Success(t *testing.T) {
 	// Arrange
 	mockService := &MockService{}
 	handler := NewHandler(mockService)
-	c, w := setupTestContext()
+	c, w := test.SetupContext()
 
 	urlID := "123e4567-e89b-12d3-a456-426614174001"
 
-	c.Request = httptest.NewRequest("DELETE", "/urls/"+urlID, nil)
 	c.Params = gin.Params{{Key: "id", Value: urlID}}
 	c.Set("user_id", 1)
 
@@ -511,9 +502,8 @@ func TestHandler_DeleteURL_InvalidRequestURI(t *testing.T) {
 	// Arrange
 	mockService := &MockService{}
 	handler := NewHandler(mockService)
-	c, w := setupTestContext()
+	c, w := test.SetupContext()
 
-	c.Request = httptest.NewRequest("DELETE", "/urls/invalid-uuid", nil)
 	c.Params = gin.Params{{Key: "id", Value: "invalid-uuid"}}
 	c.Set("user_id", 1)
 
@@ -533,11 +523,10 @@ func TestHandler_DeleteURL_ServiceError(t *testing.T) {
 	// Arrange
 	mockService := &MockService{}
 	handler := NewHandler(mockService)
-	c, w := setupTestContext()
+	c, w := test.SetupContext()
 
 	urlID := "123e4567-e89b-12d3-a456-426614174001"
 
-	c.Request = httptest.NewRequest("DELETE", "/urls/"+urlID, nil)
 	c.Params = gin.Params{{Key: "id", Value: urlID}}
 	c.Set("user_id", 1)
 

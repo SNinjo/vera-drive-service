@@ -38,16 +38,16 @@ test-cov-html:
 	go tool cover -html=cover.out
 
 access-db:
-	$(ENV) psql "$$DB_URL"
+	$(ENV) psql "$$DATABASE_URL"
 
 migrate-create:
 	migrate create -ext sql -dir migrations -seq $(name)
 
 migrate-up:
-	$(ENV) migrate -path migrations -database "$$DB_URL" up
+	$(ENV) migrate -path migrations -database "$$DATABASE_URL" up
 
 migrate-down:
-	$(ENV) migrate -path migrations -database "$$DB_URL" down 1
+	$(ENV) migrate -path migrations -database "$$DATABASE_URL" down 1
 
 migrate-force:
-	$(ENV) migrate -path migrations -database "$$DB_URL" force $(version)
+	$(ENV) migrate -path migrations -database "$$DATABASE_URL" force $(version)

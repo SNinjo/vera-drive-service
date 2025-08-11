@@ -9,16 +9,16 @@ import (
 )
 
 func NewRouter(
-	httpHandler middleware.HTTPHandler,
-	corsHandler middleware.CORSHandler,
-	authHandler middleware.AuthHandler,
+	httpMiddleware middleware.HTTPMiddleware,
+	corsMiddleware middleware.CORSMiddleware,
+	authMiddleware middleware.AuthMiddleware,
 	urlHandler *url.Handler,
 ) *gin.Engine {
 	r := gin.New()
 	r.Use(
 		gin.Recovery(),
-		gin.HandlerFunc(httpHandler),
-		gin.HandlerFunc(corsHandler),
+		gin.HandlerFunc(httpMiddleware),
+		gin.HandlerFunc(corsMiddleware),
 	)
 
 	r.GET("/healthz", func(c *gin.Context) {
@@ -27,7 +27,7 @@ func NewRouter(
 	r.StaticFile("/docs/swagger.yaml", "./api/swagger.yaml")
 	r.StaticFile("/docs", "./api/swagger.html")
 
-	url.RegisterRoutes(r, urlHandler, authHandler)
+	url.RegisterRoutes(r, urlHandler, authMiddleware)
 
 	return r
 }

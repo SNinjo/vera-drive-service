@@ -108,7 +108,8 @@ func TestAPI_GetRootID_Success(t *testing.T) {
 		Type:   "folder",
 		URL:    nil,
 	}
-	a.DB.Create(&root)
+	err = a.DB.Create(&root).Error
+	require.NoError(t, err)
 
 	token, err := jwt.NewWithClaims(
 		jwt.SigningMethodHS256,
@@ -488,7 +489,6 @@ func TestAPI_DeleteURL_Success(t *testing.T) {
 }
 
 func TestAPI_AllURLs_Unauthorized(t *testing.T) {
-
 	tests := []struct {
 		method string
 		path   string

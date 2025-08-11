@@ -5,9 +5,9 @@ CREATE TABLE url_nodes (
   name VARCHAR(255) NOT NULL,
   type VARCHAR(10) NOT NULL CHECK (type IN ('folder', 'url')),
   url TEXT,
-  created_at TIMESTAMP WITH TIME ZONE NOT NULL,
-  updated_at TIMESTAMP WITH TIME ZONE NOT NULL,
-  deleted_at TIMESTAMP WITH TIME ZONE
+  created_at TIMESTAMPTZ NOT NULL,
+  updated_at TIMESTAMPTZ NOT NULL,
+  deleted_at TIMESTAMPTZ
 );
 
 CREATE INDEX idx_url_nodes_user_id ON url_nodes(user_id);

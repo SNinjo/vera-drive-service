@@ -1,4 +1,4 @@
-# Vera Drive Service &middot; ![Coverage](https://img.shields.io/badge/Coverage-81.2%25-brightgreen)
+# Vera Drive Service &middot; ![Coverage](https://img.shields.io/badge/Coverage-74.6%25-yellow)
 
 A microservice that stores user data, such as URLs.
 

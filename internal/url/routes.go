@@ -6,14 +6,14 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func RegisterRoutes(r *gin.Engine, urlHandler *Handler, authHandler middleware.AuthHandler) {
+func RegisterRoutes(r *gin.Engine, h *Handler, authMiddleware middleware.AuthMiddleware) {
 	g := r.Group("/urls")
-	g.Use(gin.HandlerFunc(authHandler))
+	g.Use(gin.HandlerFunc(authMiddleware))
 	{
-		g.POST("", urlHandler.CreateURL)
-		g.GET("/root-id", urlHandler.GetRootID)
-		g.GET("/:id", urlHandler.GetURL)
-		g.PUT("/:id", urlHandler.ReplaceURL)
-		g.DELETE("/:id", urlHandler.DeleteURL)
+		g.POST("", h.CreateURL)
+		g.GET("/root-id", h.GetRootID)
+		g.GET("/:id", h.GetURL)
+		g.PUT("/:id", h.ReplaceURL)
+		g.DELETE("/:id", h.DeleteURL)
 	}
 }

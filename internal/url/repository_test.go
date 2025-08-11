@@ -161,7 +161,7 @@ func TestRepository_GetRoot_Success(t *testing.T) {
 		Name:     "root",
 		Type:     "folder",
 	}
-	err = repo.Create(root)
+	err = d.Create(root).Error
 	require.NoError(t, err)
 
 	// Act
@@ -208,7 +208,7 @@ func TestRepository_GetOne_Success(t *testing.T) {
 		Type:     "url",
 		URL:      test.StringPtr("https://example.com"),
 	}
-	err = repo.Create(node)
+	err = d.Create(node).Error
 	require.NoError(t, err)
 
 	// Act
@@ -257,7 +257,7 @@ func TestRepository_GetOne_FilterSoftDeleted(t *testing.T) {
 		URL:       test.StringPtr("https://example.com"),
 		DeletedAt: &time.Time{},
 	}
-	err = repo.Create(node)
+	err = d.Create(node).Error
 	require.NoError(t, err)
 
 	// Act
@@ -281,7 +281,7 @@ func TestRepository_GetParentUpToRoot_Success(t *testing.T) {
 		Name:     "Root",
 		Type:     "folder",
 	}
-	err = repo.Create(root)
+	err = d.Create(root).Error
 	require.NoError(t, err)
 
 	parent := &URLNode{
@@ -291,7 +291,7 @@ func TestRepository_GetParentUpToRoot_Success(t *testing.T) {
 		Name:     "Parent",
 		Type:     "folder",
 	}
-	err = repo.Create(parent)
+	err = d.Create(parent).Error
 	require.NoError(t, err)
 
 	child := &URLNode{
@@ -301,7 +301,7 @@ func TestRepository_GetParentUpToRoot_Success(t *testing.T) {
 		Name:     "Child",
 		Type:     "folder",
 	}
-	err = repo.Create(child)
+	err = d.Create(child).Error
 	require.NoError(t, err)
 
 	// Act
@@ -344,7 +344,7 @@ func TestRepository_GetParentUpToRoot_NoParent(t *testing.T) {
 		Name:     "Root",
 		Type:     "folder",
 	}
-	err = repo.Create(root)
+	err = d.Create(root).Error
 	require.NoError(t, err)
 
 	// Act
@@ -381,7 +381,7 @@ func TestRepository_GetParentUpToRoot_FilterSoftDeleted(t *testing.T) {
 		Name:   "Parent",
 		Type:   "folder",
 	}
-	err = repo.Create(parent)
+	err = d.Create(parent).Error
 	require.NoError(t, err)
 
 	child := &URLNode{
@@ -392,7 +392,7 @@ func TestRepository_GetParentUpToRoot_FilterSoftDeleted(t *testing.T) {
 		Type:      "folder",
 		DeletedAt: &time.Time{},
 	}
-	err = repo.Create(child)
+	err = d.Create(child).Error
 	require.NoError(t, err)
 
 	// Act
@@ -405,12 +405,7 @@ func TestRepository_GetParentUpToRoot_FilterSoftDeleted(t *testing.T) {
 
 func TestRepository_GetChildren_Success(t *testing.T) {
 	// Arrange
-	dbURL, close, err := test.SetupPostgresql()
-	require.NoError(t, err)
-	defer close()
-	d, err := db.NewDatabase(&config.Config{DatabaseURL: dbURL})
-	require.NoError(t, err)
-	err = test.SetupModels(d, &URLNode{})
+	err := test.CleanupTables(d)
 	require.NoError(t, err)
 	repo := NewRepository(d)
 
@@ -421,7 +416,7 @@ func TestRepository_GetChildren_Success(t *testing.T) {
 		Name:     "parent",
 		Type:     "folder",
 	}
-	err = repo.Create(parent)
+	err = d.Create(parent).Error
 	require.NoError(t, err)
 
 	child1 := &URLNode{
@@ -439,9 +434,9 @@ func TestRepository_GetChildren_Success(t *testing.T) {
 		Type:     "url",
 		URL:      test.StringPtr("https://example.com"),
 	}
-	err = repo.Create(child1)
+	err = d.Create(child1).Error
 	require.NoError(t, err)
-	err = repo.Create(child2)
+	err = d.Create(child2).Error
 	require.NoError(t, err)
 
 	// Act
@@ -484,7 +479,7 @@ func TestRepository_GetChildren_NoChildren(t *testing.T) {
 		Name:     "node",
 		Type:     "folder",
 	}
-	err = repo.Create(node)
+	err = d.Create(node).Error
 	require.NoError(t, err)
 
 	// Act
@@ -522,7 +517,7 @@ func TestRepository_GetChildren_FilterSoftDeleted(t *testing.T) {
 		Name:     "parent",
 		Type:     "folder",
 	}
-	err = repo.Create(parent)
+	err = d.Create(parent).Error
 	require.NoError(t, err)
 
 	child := &URLNode{
@@ -533,7 +528,7 @@ func TestRepository_GetChildren_FilterSoftDeleted(t *testing.T) {
 		Type:      "folder",
 		DeletedAt: &time.Time{},
 	}
-	err = repo.Create(child)
+	err = d.Create(child).Error
 	require.NoError(t, err)
 
 	// Act
@@ -555,7 +550,7 @@ func TestRepository_Update_Success(t *testing.T) {
 		Name:   "name",
 		Type:   "folder",
 	}
-	err = repo.Create(node)
+	err = d.Create(node).Error
 	require.NoError(t, err)
 
 	originalUpdatedAt := node.UpdatedAt
@@ -620,7 +615,7 @@ func TestRepository_SoftDelete_Success(t *testing.T) {
 		Name:   "name",
 		Type:   "folder",
 	}
-	err = repo.Create(node)
+	err = d.Create(node).Error
 	require.NoError(t, err)
 
 	// Act

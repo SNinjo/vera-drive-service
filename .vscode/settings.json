@@ -11,6 +11,8 @@
     "Initialisms",
     "test",
     "testcontainers",
-    "testutil"
+    "testutil",
+    "timestamptz",
+    "varchar"
   ],
 }

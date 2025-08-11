@@ -39,16 +39,6 @@ func SetupPostgresql() (url string, close func() error, err error) {
 	return url, close, nil
 }
 
-func SetupModels(database *gorm.DB, models ...interface{}) error {
-	for _, model := range models {
-		err := database.AutoMigrate(model)
-		if err != nil {
-			return fmt.Errorf("failed to migrate database | %v", err)
-		}
-	}
-	return nil
-}
-
 func CleanupTables(db *gorm.DB) error {
 	tables, err := db.Migrator().GetTables()
 	if err != nil {

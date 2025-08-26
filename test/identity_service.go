@@ -6,7 +6,8 @@ import (
 	"net/http/httptest"
 	"strings"
 	"time"
-	"vera-identity-service/internal/middleware"
+
+	"github.com/vera/vera-drive-service/internal/middleware"
 
 	"github.com/golang-jwt/jwt/v5"
 )

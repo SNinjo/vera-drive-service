@@ -7,12 +7,12 @@
 package app
 
 import (
-	"vera-identity-service/internal/config"
-	"vera-identity-service/internal/db"
-	"vera-identity-service/internal/logger"
-	"vera-identity-service/internal/middleware"
-	"vera-identity-service/internal/router"
-	"vera-identity-service/internal/url"
+	"github.com/vera/vera-drive-service/internal/config"
+	"github.com/vera/vera-drive-service/internal/db"
+	"github.com/vera/vera-drive-service/internal/logger"
+	"github.com/vera/vera-drive-service/internal/middleware"
+	"github.com/vera/vera-drive-service/internal/router"
+	"github.com/vera/vera-drive-service/internal/url"
 )
 
 // Injectors from wire.go:

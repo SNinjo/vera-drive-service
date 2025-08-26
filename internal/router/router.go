@@ -2,8 +2,9 @@ package router
 
 import (
 	"net/http"
-	"vera-identity-service/internal/middleware"
-	"vera-identity-service/internal/url"
+
+	"github.com/vera/vera-drive-service/internal/middleware"
+	"github.com/vera/vera-drive-service/internal/url"
 
 	"github.com/gin-gonic/gin"
 )

@@ -1,4 +1,4 @@
-module vera-identity-service
+module github.com/vera/vera-drive-service
 
 go 1.23.0
 

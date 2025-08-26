@@ -3,8 +3,8 @@ package url
 import (
 	"testing"
 
-	"vera-identity-service/internal/apperror"
-	"vera-identity-service/test"
+	"github.com/vera/vera-drive-service/internal/apperror"
+	"github.com/vera/vera-drive-service/test"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"

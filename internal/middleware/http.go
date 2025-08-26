@@ -5,7 +5,7 @@ import (
 	"io"
 	"time"
 
-	"vera-identity-service/internal/apperror"
+	"github.com/vera/vera-drive-service/internal/apperror"
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"

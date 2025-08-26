@@ -5,8 +5,9 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
-	"vera-identity-service/internal/apperror"
-	"vera-identity-service/internal/config"
+
+	"github.com/vera/vera-drive-service/internal/apperror"
+	"github.com/vera/vera-drive-service/internal/config"
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"

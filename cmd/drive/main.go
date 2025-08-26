@@ -3,7 +3,7 @@ package main
 import (
 	"log"
 
-	"vera-identity-service/internal/app"
+	"github.com/vera/vera-drive-service/internal/app"
 )
 
 func main() {

@@ -1,7 +1,7 @@
 package url
 
 import (
-	"vera-identity-service/internal/middleware"
+	"github.com/vera/vera-drive-service/internal/middleware"
 
 	"github.com/gin-gonic/gin"
 )

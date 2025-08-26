@@ -7,7 +7,8 @@ import (
 	"net/http"
 	"testing"
 	"time"
-	"vera-identity-service/test"
+
+	"github.com/vera/vera-drive-service/test"
 
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"

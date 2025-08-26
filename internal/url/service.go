@@ -3,7 +3,7 @@ package url
 import (
 	"strconv"
 
-	"vera-identity-service/internal/apperror"
+	"github.com/vera/vera-drive-service/internal/apperror"
 )
 
 type Service interface {

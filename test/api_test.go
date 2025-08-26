@@ -12,9 +12,9 @@ import (
 	"testing"
 	"time"
 
-	"vera-identity-service/internal/app"
-	"vera-identity-service/internal/middleware"
-	"vera-identity-service/internal/url"
+	"github.com/vera/vera-drive-service/internal/app"
+	"github.com/vera/vera-drive-service/internal/middleware"
+	"github.com/vera/vera-drive-service/internal/url"
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"

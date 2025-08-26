@@ -1,7 +1,7 @@
 package app
 
 import (
-	"vera-identity-service/internal/config"
+	"github.com/vera/vera-drive-service/internal/config"
 
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
